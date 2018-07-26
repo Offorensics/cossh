@@ -1,0 +1,446 @@
+#!/usr/bin/env python3
+
+import datetime
+import re
+import sys
+import subprocess
+import paramiko
+import os
+import argparse
+from getpass import getpass
+import openpyxl
+from termcolor import colored
+from CoSSH.Status.CosshStatus import CosshStatus
+from CoSSH.Configuration.SSHConfiguration import SSHConfiguration
+from multiprocessing import Pool, TimeoutError
+from paramiko import rsakey
+
+if __name__ == '__main__':
+
+	# check if clients.conf file exists, if it doesn't, create one
+	# clients.conf is the cornerstone of mass configuration feature
+	# so better check it early
+	if not os.path.exists("/etc/cossh/clients/clients.conf"):
+		open("/etc/cossh/clients/clients.conf", 'w').close()
+
+	# function to establish SSH connection to routers
+	def ssh_login(args):
+			try:
+				conn = paramiko.SSHClient()
+				conn.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+				# method indicates login method, which can be password, key or group
+				ip_address = args.split(",", 1)[0]
+				method = args.split(",", 3)[2]
+
+				# password method is just for single connections
+				# establishes SSH connection to router using provided password
+				if method == "passwd":
+					password = args.split(",", 2)[1]
+					conn.connect(ip_address, username="root", password=password, timeout=10)
+
+				# group method uses keys as well, but group allows mass login
+				# key and group methods can be used only after SSH key has been created
+				elif method == "key" or method == "group":
+					key_group = args.split(",", 2)[1]
+					key_file = "/etc/cossh/keys/cossh-key_" + key_group
+					password = args.split(",", 4)[3]
+					client_bool = False
+					client_in_group = False
+
+					# if group keys cannot be found, error message is printed and the program exits
+					# indicates login-key or login-group attempt without a key
+					if not os.path.exists(key_file):
+						print(colored("Keys for group '" + key_group + "' can't be found", "red"))
+						conn_stat = 1
+						return "ph1", "ph2", conn_stat
+
+					# go through clients.conf file line by line and look for lines that start and end with "@@"
+					# if line matches, check if the line matches specified group, for example @@customer@@
+					# if it does match, client_bool variable is True, and the next check is performed, which checks
+					# if specified IPv4 address is in the group (this check is for login-key function) 
+					with open("/etc/cossh/clients/clients.conf") as cc:
+						for line in cc:
+							if line.strip().startswith("@@") and line.strip().endswith("@@"):
+								if line.strip() == "@@" + key_group + "@@":
+									client_bool = True
+								else:
+									client_bool = False
+
+							if client_bool == True:
+								if ip_address in line.strip():
+									client_in_group = True
+
+					# if all the checks above pass and client_in_group variable is True, SSH connections will be established
+					# otherwise error message complains that the IPv4 address is not in the group
+					if client_in_group == True:
+						conn.connect(ip_address, username="root", password=password, key_filename=key_file, timeout=10)
+					else:
+						print(colored("IPv4 address '" + ip_address + "' is not in group '" + key_group, "red"))
+						sys.exit()
+
+				# also declare sftp connection
+				sftp = conn.open_sftp()
+
+				# conn_stat represents connection status, 0 indicates successful connection and the program will keep going on
+				conn_stat = 0
+
+				return conn, sftp, conn_stat
+
+			# catching possible errors
+			# fails when device is unreachable, problem might be in invalid network settings
+			except OSError:
+				print(ip_address + ": " + colored("Device is unreachable, exiting...", "red"))
+				conn_stat = 1
+				return "ph1", "ph2", conn_stat
+
+			# fails when invalid password is entered
+			except paramiko.ssh_exception.AuthenticationException:
+				print(ip_address + ": " + colored("Authentication failed, invalid password", "red"))
+				conn_stat = 1
+				return "ph1", "ph2", conn_stat
+
+			# fails when there's syntax error in cossh.cfg file
+			except IndexError:
+				print(colored("Invalid syntax in login line (takes two parameters). Try 'login = <ip_address>,<password>", "red"))
+				conn_stat = 1
+				return "ph1", "ph2", conn_stat
+
+			# fails due to denied connection
+			except paramiko.ssh_exception.SSHException:
+				print(ip_address + ": " + colored("Error reading SSH protocol banner[Errno 104] Connection reset by peer", "red"))
+				conn_stat = 1
+				return "ph1", "ph2", conn_stat
+
+			# rest of possible errors will be caught here
+			except Exception as e:
+				print(ip_address + ": " + colored("An error happened while trying to login to router", "red"))
+				print(colored(e, "red"))
+				conn_stat = 1
+				return "ph1", "ph2", conn_stat
+
+	# checks password's validity when trying to log in with SSH key
+	def check_key_passwd(group, passwd):
+		key_file = open("/etc/cossh/keys/cossh-key_" + group, "r")
+
+		try:
+			rsakey.RSAKey.from_private_key(key_file, password=passwd)
+			key_file.close()
+			return True
+		except Exception:
+			key_file.close()
+			return False
+
+	#define optional arguments
+	parser = argparse.ArgumentParser()
+	parser.add_argument("-f", metavar="[COSSH CFG FILE]", nargs=1, help="Cossh configuration file")
+	parser.add_argument("-c", metavar="[ROUTER CFG FILE]", nargs=1, help="Router's configuration file (goes to standard)")
+	parser.add_argument("-s", action="store_true", help="Suppress output")
+	parser.add_argument("-o", metavar="[GROUP]", nargs=1, help="Get online status of a group and exit")
+	parser.add_argument("--groups", action="store_true", help="List all existing client groups and exit")
+	parser.add_argument("--example", action="store_true", help="Generate example cossh configuration file and exit")
+
+	args = parser.parse_args()
+	cfg = args.f
+	router_cfg = args.c
+	silent = args.s
+	online_hosts = args.o
+	existing_groups = args.groups
+	generate_example = args.example
+
+	#initialize status functions
+	cst = CosshStatus()
+
+	# if -o argument is specified and it has a value, get online status of group's devices
+	# this snippet exits after running, which means it cannot be used with configuration functions
+	if online_hosts != None:
+		cst.get_online(online_hosts[0])
+		sys.exit()
+
+	# if --groups argument is given, list all existing groups
+	# this snippet exits after running, which means it cannot be used with configuration functions
+	if existing_groups == True:
+		cst.get_groups()
+		sys.exit()
+
+	# if --example argument is given, generate example cossh configuration file
+	# this snippet exits after running, which means it cannot be used with configuration functions
+	if generate_example == True:
+		cst.generate_cfg()
+		sys.exit()
+		
+
+	# checks if cfg file is specified or if cfg file exists with default name
+	if cfg != None:
+		cfgfile = cfg[0]
+	else:
+		if os.path.exists("cossh.cfg"):
+			cfgfile = "cossh.cfg"
+		else:
+			print("No configuration file specified, by default trying to use cossh.cfg in current working directory, but it doesn't exist")
+			print("Please, provide configuration file with '-f' parameter or create cossh.cfg in the working directory")
+			sys.exit()
+
+	# available functions
+	functions = ["create-user", 
+		     "change-passwd", 
+		     "add-um",
+		     "upload-cfg",
+		     "upload-file",
+		     "delete-user",
+		     "sws",
+		     "reboot",
+		     "write-excel",
+		     "router-command",
+		     "add-client",
+		     "latest-update",
+		     "remove-um",]
+
+	# action functions contains only functions that change something in a router
+	# reason for separation is that we only want to change latest-update if something actually changed
+	action_functions = ["create-user",
+			    "change-passwd",
+			    "add-um",
+			    "upload-cfg",
+			    "upload-file",
+			    "delete-user",
+			    "sws",
+			    "router-command",
+			    "remove-um",]
+
+	def launch_process(login_line):
+
+		# we want to disable add-client function if a client is logged in with a key
+		method = login_line.split(",", 3)[2]
+		if method == "group" or method == "key":
+			functions.remove("add-client")
+
+		line_count = 1
+		program_continue = True
+
+		# initialize SSH connection to device
+		ip_address = login_line.split(",", 1)[0]
+		conn, sftp, conn_stat = ssh_login(login_line)
+		
+		if conn_stat == 1:
+			program_continue = False
+		else:
+			conf = SSHConfiguration(conn, sftp)
+			update_value = "Update"
+			update = False
+
+			#check if ROUTER cfg file is given as parameter, and upload if true
+			if router_cfg != None:
+				router_conf = router_cfg[0] + "," + "standard"
+				msg, stat = conf.upload_cfg(router_conf)
+				update = True
+				if silent == False:
+					if stat == 0:
+						print(colored(msg, "green"))
+					elif stat == 1:
+						print(colored(msg, "yellow"))
+					else:
+						print(colored(msg + " - (command-line parameter)", "red"))
+
+			# read cfg file that contains instructions for this program
+			with open(cfgfile) as cf:
+
+				# program loops through each line in the file, checking the first word on the line (separated by whitespace)
+				for unst_line in cf:
+					line = unst_line.strip()
+					col1 = line.split(" ", 1)[0]
+
+					# checks if the first word matches a function name
+					if col1 in functions:
+						try:
+							# stripped_line contains all needed function arguments separated by comma
+							# each function knows how to split this specific syntax
+							stripped_line = line.split(" = ", 1)[1].replace(", ", ",").replace(" ,", ",")
+
+							# calling a function and passing arguments
+							msg, stat = getattr(conf, col1.replace("-","_"))(stripped_line)
+
+							# if program was launched with -s flag, silent is True
+							# and most of output will be suppressed
+							# otherwise function returns a message which is printed to stdout
+							# with a color determined by function status
+							if silent == False:
+								if stat == 0:
+									print(ip_address + ": " + colored(msg, "green"))
+								elif stat == 1:
+									print(ip_address + ": " + colored( msg, "yellow"))
+								else:
+									print(ip_address + ": " + colored(msg + " - (" + cfgfile + ", line " + str(line_count) + ")", "red"))
+	
+							# action functions will update router's latest update information
+							if col1 in action_functions and stat == 0:
+								update = True
+
+						except IndexError:
+							# reboot is a separate function which takes no arguments
+							# reboot will terminate configuration process, so it should be the
+							# last command issued
+							if col1 == "reboot":
+								conf.reboot()
+								if silent == False:
+									print(colored(ip_address + ": Reboot issued, end of configuration", "green"))
+
+							# other too short lines are considered invalid
+							else:
+								print(colored("Invalid syntax in '" + col1 + "' specification on line " + str(line_count), "red"))
+								pass
+						except Exception as e:
+							print(e)
+							pass
+
+					# update-name function just defines update_value variable, which can be used to
+					# store information about latest update
+					if col1 == "update-name":
+						update_value = line.split(" = ", 1)[1].replace(", ", ",").replace(" ,", ",")
+
+					line_count += 1
+
+			# if action functions were issued, update is True and update will be written into a router
+			if update == True:
+				update_time = datetime.datetime.now().strftime ("%d/%m/%Y %H:%M:%S")
+				update_stamp = str(update_value) + " - " + str(update_time)
+				conf.update_name(update_stamp)
+
+			# close SSH connection after configuration
+			conf.close_ssh()
+
+	try:
+		creds = False
+
+		# program's configuration will be read to determine login method
+		with open(cfgfile) as cf:
+
+			# program loops through every single line of its configuration file, checking the first word on each line
+			# looking for a method to login
+			for unst_line in cf:
+				line = unst_line.strip()
+				col1 = line.split(" ", 1)[0]
+
+				# login method 'login' is IPv4-address/password authentication
+				if col1 == "login":
+					creds = True
+					method = "passwd"
+					login_line = line.split(" = ", 1)[1].replace(", ", ",").replace(" ,", ",") + "," + method
+					break
+
+				# login method 'login-key' is IPv4-address/SSH-key authentication (key must be installed in router)
+				# login with IPv4-address and group name which holds the key
+				if col1 == "login-key":
+					creds = True
+					method = "key"
+					login_group = line.split(" = ", 1)[1].replace(", ", ",").replace(" ,", ",").split(",", 2)[1]
+
+					# group's password will be asked
+					try:
+						print(colored("***** " + login_group.upper() + " LOGIN *****", "yellow"))
+						passwd = getpass("Enter password: ")
+
+					except KeyboardInterrupt:
+						print("\nAborted..")
+						sys.exit()
+
+					except Exception as e:
+						print(e)
+						sys.exit()
+
+					# build the login line
+					login_line = line.split(" = ", 1)[1].replace(", ", ",").replace(" ,", ",") + "," + method + "," + passwd
+
+					# verify password's validity
+					verify_passwd = check_key_passwd(login_group, passwd)
+
+					if verify_passwd == False:
+						print("Invalid password for group '" + login_group + "'")
+						sys.exit()
+					break
+
+				# login method 'login-group' is IPv4-address/SSH-key authentication (key must be installed in router)
+				# login with group name only, will connect to every online router in a given group
+				if col1 == "login-group":
+					client_bool = False
+					creds = True
+					method = "group"
+					client_list = []
+					login_group = line.split(" = ", 1)[1].replace(", ", ",").replace(" ,", ",")
+
+					# group's password will be asked
+					try:
+						print(colored("***** " + login_group.upper() + " LOGIN *****", "yellow"))
+						passwd = getpass("Enter password: ")
+
+					except KeyboardInterrupt:
+						print("\nAborted...")
+						sys.exit()
+
+					except Exception as e:
+						print(e)
+						sys.exit()
+
+					# verify password's validity
+					verify_passwd = check_key_passwd(login_group, passwd)
+
+					if verify_passwd == False:
+						print("Invalid password for group '" + login_group + "'")
+						sys.exit()
+
+					# if password is valid, read clients.conf which contains all client groups
+					with open("/etc/cossh/clients/clients.conf") as cc:
+
+						# look for lines which start and end with @@, because that indicates where
+						# groups start
+						for line in cc:
+							if line.strip().startswith("@@") and line.strip().endswith("@@"):
+
+								# if a given group name exists, set client_bool variable True
+								if line.strip() == "@@" + login_group + "@@":
+									client_bool = True
+								else:
+									client_bool = False
+
+							# if client_bool variable is True and line doesn't start with @@ or is not empty
+							# extract clients' IPv4 addresses and form a login line and append it to client_list
+							# (if line starts with @@, we know that another group's information will start there
+							# so set client_bool False, similarly we know that when there's an empty line, a client
+							# group ends there
+							if client_bool == True and not line.strip().startswith("@@") and line.strip() != "":
+								client_ip = line.strip().split(":", 1)[0]
+								client_login = client_ip + "," + login_group + "," + method + "," + passwd
+								client_list.append(client_login)
+					break
+
+		# if creds are False after all of these checks, print error message and exit
+		if creds == False:
+			print("IPv4 address and router's password are missing")
+			sys.exit()
+
+	# if cfg file cannot be found, print this error message
+	except FileNotFoundError:
+		print("File '" + cfgfile + "' does not exist, exiting...")
+		sys.exit()
+
+	except PermissionError:
+		print("Can't read configuration file, permissions for '" + cfgfile + "' are invalid, exiting...")
+		sys.exit()
+
+	except Exception as e:
+		print(e)
+		sys.exit()
+
+	# login and login-key methods will launch a single configuration process
+	if method == "passwd" or method == "key":
+		launch_process(login_line)
+
+	# if method is login-group, as many processes as there are clients in a group will be started
+	else:
+		try:
+			cossh_processes = Pool(processes=len(client_list))
+			data = cossh_processes.map_async(launch_process, [client_list[i] for i in range(len(client_list))])
+			cossh_processes.close()
+			cossh_processes.join()
+		except TimeoutError:
+			sys.exit()

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+	username="$SUDO_USER"
+else
+	username="$1"
+fi
+
+#Set user file access permissions for /etc/cossh/clients
+setfacl -m u:$username:rwx /etc/cossh/clients
+
+#Set user file access permissions for /etc/cossh/configs
+setfacl -m u:$username:rwx /etc/cossh/configs
+
+#Set user file access permissions for /etc/cossh/keys
+setfacl -m u:$username:rwx /etc/cossh/keys
