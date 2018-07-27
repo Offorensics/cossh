@@ -102,7 +102,7 @@ class SSHConfiguration():
 		remote_md5_cmd = "openssl md5 " + remote_path + " |awk '{print $2}'"
 		remove_remote = "rm -f " + remote_path
 
-		self.sftp.put(remote_path, local_path)
+		self.sftp.get(remote_path, local_path)
 
 		ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(remote_md5_cmd)
 		cmd_output = ssh_stdout.readlines()
