@@ -83,6 +83,7 @@ LR77 (*)
 (*) - This model and its submodels
 ```
 
+
 # Operating System requirements
 
 A Linux operating system is required. Debian based distribution is recommended.
