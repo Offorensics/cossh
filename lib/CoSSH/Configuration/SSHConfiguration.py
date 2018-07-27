@@ -31,6 +31,7 @@ import openpyxl
 import datetime
 from CoSSH.Utils.FileWriting import InPlaceReplacement
 from CoSSH.Utils.Hashing import LocalHash
+from CoSSH.Utils.Hashing import TarBalls
 
 class SSHConfiguration():
 
@@ -543,13 +544,12 @@ class SSHConfiguration():
 			return error_msg, func_stat
 
 		# check user module's name
-		um_name_cmd = "tar -tf " + path_to_um + " |sed -e 's@/.*@@' |uniq"
-		um_name = subprocess.check_output([um_name_cmd], shell=True).decode('utf-8').strip()
+		#um_name_cmd = "tar -tf " + path_to_um + " |sed -e 's@/.*@@' |uniq"
+		#um_name = subprocess.check_output([um_name_cmd], shell=True).decode('utf-8').strip()
+		um_name = TarBalls.get_root_dir(path_to_um)
 
 		# store local user module's md5sum
 		local_md5 = LocalHash.calculate_md5(path_to_um)
-		#local_cmd = "openssl md5 " + path_to_um + " |awk '{print $2}'"
-		#local_md5 = subprocess.check_output([local_cmd], shell=True).decode('utf-8').strip()
 
 		remote_path = "/root/" + os.path.basename(path_to_um)
 		remote_md5_cmd = "openssl md5 " + remote_path + " |awk '{print $2}'"
