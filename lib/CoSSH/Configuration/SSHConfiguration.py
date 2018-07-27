@@ -615,6 +615,12 @@ class SSHConfiguration():
 			error_msg = "Missing unique configuration file '" + path_to_cfg + "'"
 			return error_msg, func_stat
 
+		startup_line = "STARTUP=if [ ! -d /root/.ssh/ ]; then cp -r /opt/.ssh/ /root/;fi"
+		check_startup_script = FileWriting.search_string(path_to_cfg, startup_line)
+		if check_startuo_script == False:
+			with open(path_to_cfg, "a") as ptc:
+				ptc.write(startup_line + "\n")
+
 		# store local configuration file's md5sum
 		#cmd = "openssl md5 " + path_to_cfg + " |awk '{print $2}'"
 		#local_md5 = subprocess.check_output([cmd], shell=True).decode('utf-8').strip()

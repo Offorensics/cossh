@@ -90,3 +90,17 @@ class InPlaceReplacement():
 
 		except Exception as e:
 			print(e)
+
+	def search_string(cfg_file, string):
+		try:
+			with open(cfg_file) as cf:
+				if string in cf.read():
+					return True
+				else:
+					return False
+		except PermissionError:
+			print("Invalid file permissions for '" + filename + "'")
+
+		except Exception as e:
+			print(e)
+
