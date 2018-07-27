@@ -128,6 +128,7 @@ class CosshStatus():
 				ef.write("# reboot\nreboot\n\n")
 				ef.write("# remove-um = <user_module_name>\nremove-um = mymodule\n\n")
 				ef.write("# router-command = <custom command>\nrouter-command = /etc/init.d/eth restart\n\n")
+				ef.write("# save-unique = true\nsave-unique = true\n\n")
 				ef.write("# sws = <setting_value_pair>\nsws = SNMP_NAME=example_name\n\n")
 				ef.write("# update-name = <custom update message>\nupdate-name = Updated firmware to 6.1.5\n\n")
 				ef.write("# upload-cfg = <path_to_cfg_file>, standard/alt1/alt2/alt3\nupload-cfg = /home/cossh/configs/router_settings.cfg, standard\n\n")

@@ -77,6 +77,50 @@ class SSHConfiguration():
 
 		return status_msg, func_stat
 
+
+	# gets a unique configuration file from router and places it locally under /etc/cossh/configs/
+	def save_unique(self, args):
+		func_stat = 2
+		save_true = args.split(",", 1)[0]
+
+		if save_true.lower() != "true":
+			error_msg = "save-unique is not set to 'true'"
+			return error_msg, func_stat
+
+		serial = self.get_serial()
+		remote_path = "/root/cossh_" + str(serial) + ".cfg"
+		local_path = "/etc/cossh/configs/cossh_" + str(serial) + ".cfg"
+		create_unique = "backup > " + remote_path
+		
+		ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(create_unique)
+		check_status = ssh_stdout.channel.recv_exit_status()
+
+		if check_status != 0:
+			error_msg = "Failed to fetch unique configuration file"
+			return error_msg, func_stat
+
+		remote_md5_cmd = "openssl md5 " + remote_path + " |awk '{print $2}'"
+		remove_remote = "rm -f " + remote_path
+
+		self.sftp.put(remote_path, local_path)
+
+		ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(remote_md5_cmd)
+		cmd_output = ssh_stdout.readlines()
+		remote_md5 = cmd_output[0].strip()
+		local_md5 = LocalHash.calculate_md5(local_path)
+
+		ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(remove_remote)
+		cmd_output = ssh_stdout.readlines()
+
+		if local_md5 != remote_md5:
+			status_msg = "A unique configuration file for '" + str(serial) + "' created, but the file may be corrupt"
+			return status_msg, func_stat
+		else:
+			status_msg = "A unique configuration file '" + local_path  + "' succesfully updated"
+			func_stat = 0
+			return status_msg, func_stat
+
+
 	# this function reads latest update and prints it
 	def latest_update(self, args):
 		func_stat = 1
@@ -290,19 +334,6 @@ class SSHConfiguration():
 		wb.save(filename = file_path)
 
 		return status_msg, func_stat
-
-#	def write_csv(self, args):
-#		csv_value = args.split(",", 1)[0]
-#		file_path = args.split(",", 2)[1]
-#
-#		if not os.path.exists(file_path):
-#			error_msg = "File '" + file_path + "' does not exist"
-#			return error_msg
-#
-#		if csv_value == "$serial":
-#			csv_value = get_serial(self.conn)
-#		elif csv_value == "$mac":
-#			csv_value = get_mac(self.conn)
 
 	# gets router's serial number
 	def get_serial(self):

@@ -202,34 +202,35 @@ if __name__ == '__main__':
 			print("Please, provide configuration file with '-f' parameter or create cossh.cfg in the working directory")
 			sys.exit()
 
-	# available functions
-	functions = ["create-user", 
-		     "change-passwd", 
-		     "add-um",
-		     "upload-cfg",
-		     "upload-file",
-		     "delete-user",
-		     "sws",
-		     "reboot",
-		     "write-excel",
-		     "router-command",
-		     "add-client",
-		     "latest-update",
-		     "remove-um",]
-
-	# action functions contains only functions that change something in a router
-	# reason for separation is that we only want to change latest-update if something actually changed
-	action_functions = ["create-user",
-			    "change-passwd",
-			    "add-um",
-			    "upload-cfg",
-			    "upload-file",
-			    "delete-user",
-			    "sws",
-			    "router-command",
-			    "remove-um",]
-
 	def launch_process(login_line):
+
+		# available functions
+		functions = ["create-user", 
+			     "change-passwd", 
+			     "add-um",
+			     "upload-cfg",
+			     "upload-file",
+			     "delete-user",
+			     "sws",
+			     "reboot",
+			     "write-excel",
+			     "router-command",
+			     "add-client",
+			     "latest-update",
+			     "remove-um",
+			     "save-unique",]
+
+		# action functions contains only functions that change something in a router
+		# reason for separation is that we only want to change latest-update if something actually changed
+		action_functions = ["create-user",
+				    "change-passwd",
+				    "add-um",
+				    "upload-cfg",
+				    "upload-file",
+				    "delete-user",
+				    "sws",
+				    "router-command",
+				    "remove-um",]
 
 		# we want to disable add-client function if a client is logged in with a key
 		method = login_line.split(",", 3)[2]
