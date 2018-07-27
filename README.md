@@ -72,15 +72,16 @@ That's it. You are ready to go.
 
 # Supported routers
 
-SmartMotion (\*)
-SmartStart (\*)
-SmartFlex (\*)
-UR5 (\*)
-ER75 (\*)
-LR77 (\*)
+```
+SmartMotion (*)
+SmartStart (*)
+SmartFlex (*)
+UR5 (*)
+ER75 (*)
+LR77 (*)
 
-
-(\*) - _This model and its submodels_
+(*) - This model and its submodels
+```
 
 # Operating System requirements
 
@@ -292,6 +293,18 @@ EXAMPLE
 remove-um = mymodule
 ```
 
+**save-unique**
+
+Imports router's current configuration and saves it under _/etc/cossh/configs/_ as the router's unique configuration file.
+
+```
+SYNTAX
+save-unique = true
+
+EXAMPLE
+save-unique = true
+```
+
 **sws**
 
 Configures a single parameter in router (currently standard profile). Requires setting/value pair. Notice that it is extremely important to have no whitespaces around the equal (=) sign between _setting_ and _value_ in setting/value pair! Two variables are available, _$serial_ and _$mac_ which can be used to replace value in setting/value pair. _$serial_ will be replaced with router's serial number and _$mac_ with router's primary MAC address.
@@ -391,3 +404,11 @@ Currently _Cossh_ has to be built from source, but eventually it should be avail
 **Features**
 
 _Cossh_ lacks some features that will be added in future versions, probably the most important will be firmware upgrade, which is coming soon (possible now as well but needs custom commands). Few of the current features also need revamping.
+
+**Alternative configuration method**
+
+As router's API evolves, it will be possible to choose between configuration over SSH and API. This will happen at some point, but currently the API doesn't support all needed functions. 
+
+**Router State**
+
+There will be more statistics available, such as router's temperature and signal strength, and much more.
