@@ -27,9 +27,9 @@ class LocalHash():
 
 	def calculate_md5(filepath):
 		try:
-			with open(filepath) as fp:
+			with open(filepath, "rb") as fp:
 				file_data = fp.read()
-				md5_sum = hashlib.md5(file_data.encode('utf-8')).hexdigest()
+				md5_sum = hashlib.md5(file_data).hexdigest()
 
 			return md5_sum
 
