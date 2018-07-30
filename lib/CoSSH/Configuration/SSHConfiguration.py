@@ -31,7 +31,7 @@ import openpyxl
 import datetime
 from CoSSH.Utils.FileWriting import InPlaceReplacement
 from CoSSH.Utils.Hashing import LocalHash
-from CoSSH.Utils.Hashing import TarBalls
+from CoSSH.Utils.TarBalls import TarBalls
 
 class SSHConfiguration():
 
