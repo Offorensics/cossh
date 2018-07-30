@@ -33,6 +33,7 @@ import openpyxl
 from termcolor import colored
 from CoSSH.Status.CosshStatus import CosshStatus
 from CoSSH.Configuration.SSHConfiguration import SSHConfiguration
+from CoSSH.Utils.Groups import DeleteObject
 from multiprocessing import Pool, TimeoutError
 from paramiko import rsakey
 
@@ -160,6 +161,8 @@ if __name__ == '__main__':
 	parser.add_argument("-o", metavar="[GROUP]", nargs=1, help="Get online status of a group and exit")
 	parser.add_argument("--groups", action="store_true", help="List all existing client groups and exit")
 	parser.add_argument("--example", action="store_true", help="Generate example cossh configuration file and exit")
+	parser.add_argument("--del-group", metavar="[GROUP]", nargs=1, help="Deletes group and its members and exit")
+	parser.add_argument("--del-device", metavar="[DEVICE SERIAL NO]", nargs=1, help="Delete device from its group and exit")
 
 	args = parser.parse_args()
 	cfg = args.f
@@ -168,9 +171,12 @@ if __name__ == '__main__':
 	online_hosts = args.o
 	existing_groups = args.groups
 	generate_example = args.example
+	del_groupname = args.del_group
+	del_serial = args.del_device
 
-	#initialize status functions
+	#initialize status functions and delete functions
 	cst = CosshStatus()
+	dob = DeleteObject()
 
 	# if -o argument is specified and it has a value, get online status of group's devices
 	# this snippet exits after running, which means it cannot be used with configuration functions
@@ -188,6 +194,18 @@ if __name__ == '__main__':
 	# this snippet exits after running, which means it cannot be used with configuration functions
 	if generate_example == True:
 		cst.generate_cfg()
+		sys.exit()
+
+	# if --del-group argument is given, delete group and its members from /etc/cossh/clients/clients.conf
+	# this snippet exits after running, which means it cannot be used with configuration functions
+	if del_groupname != None:
+		dob.delete_group(del_groupname[0])
+		sys.exit()
+
+	# if --del-device argument is given, remove device from /etc/cossh/clients/clients.conf
+	# this snippet exits after running, which means it cannot be used with configuration functions
+	if del_serial != None:
+		dob.remove_device(del_serial[0])
 		sys.exit()
 		
 
@@ -465,4 +483,10 @@ if __name__ == '__main__':
 			cossh_processes.close()
 			cossh_processes.join()
 		except TimeoutError:
+			sys.exit()
+		except ValueError:
+			print("Group is empty, exiting...")
+			sys.exit()
+		except Exception as e:
+			print(e)
 			sys.exit()
