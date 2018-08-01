@@ -32,6 +32,7 @@ from termcolor import colored
 from CoSSH.GroupStatus.CosshStatus import CosshStatus
 from CoSSH.Configuration.SSHConfiguration import SSHConfiguration
 from CoSSH.Utils.Groups import DeleteObject
+from CoSSH.Utils.FileWriting import InPlaceReplacement
 from multiprocessing import Pool, TimeoutError
 from paramiko import rsakey
 
@@ -141,7 +142,11 @@ if __name__ == '__main__':
 
 	# checks password's validity when trying to log in with SSH key
 	def check_key_passwd(group, passwd):
-		key_file = open("/etc/cossh/keys/cossh-key_" + group, "r")
+		try:
+			key_file = open("/etc/cossh/keys/cossh-key_" + group, "r")
+		except FileNotFoundError:
+			print("Keys for group '" + group + "' don't exist")
+			sys.exit()
 
 		try:
 			rsakey.RSAKey.from_private_key(key_file, password=passwd)
@@ -371,7 +376,13 @@ if __name__ == '__main__':
 				if col1 == "login-key":
 					creds = True
 					method = "key"
+					client_file = "/etc/cossh/clients/clients.conf"
 					login_group = line.split(" = ", 1)[1].replace(", ", ",").replace(" ,", ",").split(",", 2)[1]
+
+					check_login_group = InPlaceReplacement.search_string(client_file, "@@" + login_group + "@@")
+					if check_login_group == False:
+						print("Group '" + login_group + "' doesn't exist, exiting...")
+						sys.exit()
 
 					# group's password will be asked
 					try:
@@ -404,7 +415,13 @@ if __name__ == '__main__':
 					creds = True
 					method = "group"
 					client_list = []
+					client_file = "/etc/cossh/clients/clients.conf"
 					login_group = line.split(" = ", 1)[1].replace(", ", ",").replace(" ,", ",")
+
+					check_login_group = InPlaceReplacement.search_string(client_file, "@@" + login_group + "@@")
+					if check_login_group == False:
+						print("Group '" + login_group + "' doesn't exist, exiting...")
+						sys.exit()
 
 					# group's password will be asked
 					try:

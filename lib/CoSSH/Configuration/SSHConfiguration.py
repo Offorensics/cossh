@@ -668,13 +668,18 @@ class SSHConfiguration():
 			if cmd_status == 0:
 				ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(restore_cfg)
 				cmd_status = ssh_stdout.channel.recv_exit_status()
+				cmd_output = ssh_stdout.readlines()
 				remove_file = "rm -f " + remote_path
 				ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(remove_file)
 				if cmd_status == 0:
 					status_msg = "Configuration file " + os.path.basename(path_to_cfg)  + " uploaded to " + profile
 					func_stat = 0
 				else:
-					status_msg = "Failed to upload configuration file to " + profile
+					if cmd_output[0].strip() == "Configuration remains unchanged.":
+						func_stat = 1
+						status_msg = "No changes to configuration, configuration remains unchanged"
+					else:
+						status_msg = "Failed to upload configuration file to " + profile
 			else:
 				status_msg = "Couldn't activate profile '" + profile + "', configuration failed"
 		else:
@@ -701,8 +706,6 @@ class SSHConfiguration():
 			else:
 				path_in_dest = path_in_dest + "/" + filename
 
-		#cmd = "openssl md5 " + path_in_orig + " |awk '{print $2}'"
-		#local_md5 = subprocess.check_output([cmd], shell=True).decode('utf-8').strip()
 		local_md5 = LocalHash.calculate_md5(path_in_orig)
 		remote_md5_cmd = "openssl md5 " + path_in_dest + " |awk '{print $2}'"
 
