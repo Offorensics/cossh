@@ -1,0 +1,3 @@
+# /etc/cossh/clients/ directory contains extremely important file 'clients.conf'
+# 'clients.conf' contains group information (its members' IPv4 addresses and serial numbers)
+# DO NOT EDIT 'clients.conf' manually, unexpected outcomes may result

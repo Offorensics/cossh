@@ -1,0 +1,3 @@
+# /etc/cossh/configs/ directory contains routers' unique configuration files (if they exist)
+# unique configuration files' content can be edited manually as well (just don't do anything stupid)
+# DO NOT change file names in this directory

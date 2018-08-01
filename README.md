@@ -118,6 +118,14 @@ Lists all existing client groups and exits.
 
 Generates example cossh configuration file. The file includes all supported commands and their correct syntax, and one example for each command.
 
+**--del-group [GROUP]**
+
+Deletes given group and exits.
+
+**--del-device [DEVICE SERIAL]**
+
+Deletes given device from its group
+
 # Cossh functions
 
 **add-client**

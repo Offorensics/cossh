@@ -1,0 +1,2 @@
+# /etc/cossh/keys/ directory contains SSH keys for configuration groups
+# DO NOT edit keys in this directory
