@@ -91,6 +91,26 @@ class InPlaceReplacement():
 		except Exception as e:
 			print(e)
 
+	def remove_string_lines(string_lines, filename):
+
+		try:
+			with tempfile.NamedTemporaryFile('w', delete=False) as outfile:
+				with open(filename) as infile:
+					for line in infile:
+						if not any(string in line for string in string_lines):
+							outfile.write(line)
+
+			os.replace(outfile.name, filename)
+
+		except FileNotFoundError:
+			print(filename + ", no such file or directory")
+
+		except PermissionError:
+			 print("Invalid file permissions for '" + filename + "'")
+
+		except Exception as e:
+			print(e)
+
 	def search_string(cfg_file, string):
 		try:
 			with open(cfg_file) as cf:

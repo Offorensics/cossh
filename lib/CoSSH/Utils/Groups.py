@@ -40,8 +40,7 @@ class DeleteObject():
 		public_key = "/etc/cossh/keys/cossh-key_" + groupname + ".pub"
 		private_key = "/etc/cossh/keys/cossh-key_" + groupname
 
-		for client in group:
-			InPlaceReplacement.remove_string_line(client, self.client_conf)
+		InPlaceReplacement.remove_string_lines(group, self.client_conf)
 
 		print("Group '" + groupname + "' deleted")
 
