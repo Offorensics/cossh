@@ -24,14 +24,12 @@
 import datetime
 import re
 import sys
-import subprocess
 import paramiko
 import os
 import argparse
 from getpass import getpass
-import openpyxl
 from termcolor import colored
-from CoSSH.Status.CosshStatus import CosshStatus
+from CoSSH.GroupStatus.CosshStatus import CosshStatus
 from CoSSH.Configuration.SSHConfiguration import SSHConfiguration
 from CoSSH.Utils.Groups import DeleteObject
 from multiprocessing import Pool, TimeoutError

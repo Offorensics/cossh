@@ -53,7 +53,7 @@ setup(
         description='Router configuration management tool',
         author='Joram Puumala',
         author_email='offorensics@gmail.com',
-        packages=['CoSSH', 'CoSSH.Status', 'CoSSH.Configuration', 'CoSSH.Utils'],
+        packages=['CoSSH', 'CoSSH.GroupStatus', 'CoSSH.Configuration', 'CoSSH.Utils'],
 	include_package_data=True,
         package_dir={'': 'lib'},
         url='http://offorensics.com',
