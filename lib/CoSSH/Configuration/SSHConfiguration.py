@@ -615,16 +615,7 @@ class SSHConfiguration():
 			error_msg = "Missing unique configuration file '" + path_to_cfg + "'"
 			return error_msg, func_stat
 
-		#FIX THIS MESS
-		startup_line = "STARTUP=if [ ! -d /root/.ssh/ ]; then cp -r /opt/.ssh/ /root/;fi"
-		check_startup_script = InPlaceReplacement.search_string(path_to_cfg, startup_line)
-		if check_startup_script == False:
-			with open(path_to_cfg, "a") as ptc:
-				ptc.write(startup_line + "\n")
-
 		# store local configuration file's md5sum
-		#cmd = "openssl md5 " + path_to_cfg + " |awk '{print $2}'"
-		#local_md5 = subprocess.check_output([cmd], shell=True).decode('utf-8').strip()
 		local_md5 = LocalHash.calculate_md5(path_to_cfg)
 
 		remote_path = "/root/" + os.path.basename(path_to_cfg)
@@ -660,6 +651,18 @@ class SSHConfiguration():
 
 			ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(add_profile)
 			cmd_status = ssh_stdout.channel.recv_exit_status()
+
+			# check if device has ssh keys installed
+			# if it does, include ssh keys check in startup script
+			# new startup script wipes off old
+			check_ssh_dir = "ls -l /opt/.ssh/"
+			ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(check_ssh_dir)
+			ssh_check_status = ssh_stdout.channel.recv_exit_status()
+
+			if ssh_check_status == 0:
+				add_ssh_startup = "echo 'STARTUP=if [ ! -d /root/.ssh/ ]; then cp -r /opt/.ssh/ /root/;fi' >> " + remote_path
+				ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(check_ssh_dir)
+				startup_add_status = ssh_stdout.channel.recv_exit_status()
 
 			# restore configuration
 			if cmd_status == 0:
