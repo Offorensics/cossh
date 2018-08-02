@@ -62,7 +62,7 @@ setup(
         description='Router configuration automation/management tool',
         author='Joram Puumala',
         author_email='offorensics@gmail.com',
-	license='MIT'
+	license='MIT',
         packages=['CoSSH', 'CoSSH.GroupStatus', 'CoSSH.Configuration', 'CoSSH.Utils'],
 	include_package_data=True,
         package_dir={'': 'lib'},
