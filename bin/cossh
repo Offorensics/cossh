@@ -135,8 +135,8 @@ if __name__ == '__main__':
 
 			# rest of possible errors will be caught here
 			except Exception as e:
-				print(ip_address + ": " + colored("An error happened while trying to login to router", "red"))
-				print(colored(e, "red"))
+				print(ip_address + ": " + colored("An error happened while trying to login to router, double-check login function and its syntax...", "red"))
+				#print(colored(e, "red"))
 				conn_stat = 1
 				return "ph1", "ph2", conn_stat
 

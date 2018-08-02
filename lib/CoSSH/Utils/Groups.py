@@ -59,8 +59,13 @@ class DeleteObject():
 
 
 	def remove_device(self, serial):
-		InPlaceReplacement.remove_string_line(serial, self.client_conf)
-		print("Device '" + str(serial) + "' removed from its host group")
+		check_string = InPlaceReplacement.search_string(self.client_conf, serial)
+
+		if check_string == True:
+			InPlaceReplacement.remove_string_line(serial, self.client_conf)
+			print("Device '" + str(serial) + "' removed from its host group")
+		else:
+			print("Device '" + str(serial) + "' doesn't belong to any group")
 
 	def catch_group(self, groupname):
 

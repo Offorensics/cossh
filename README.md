@@ -71,7 +71,7 @@ pip3 install -r requirements.txt
 
 That's it. You are ready to go.
 
-# Giving another user on the same system permissions to run cossh (not recommended)
+# Giving another user on the same system permission to run cossh (not recommended)
 
 It is not recommended to have multiple users on the same system to run cossh, but it is possible. Follow the instructions below to setup a new user.
 
