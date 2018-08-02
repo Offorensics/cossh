@@ -71,6 +71,26 @@ pip3 install -r requirements.txt
 
 That's it. You are ready to go.
 
+# Giving another user on the same system permissions to run cossh (not recommended)
+
+It is not recommended to have multiple users on the same system to run cossh, but it is possible. Follow the instructions below to setup a new user.
+
+**1.**
+
+Run cossh-admin as root, and give that new user as a parameter
+
+```
+cossh-admin <user>
+```
+
+**2. (may be required)**
+
+If you didn't install requirements earlier globally (which is wise), you have to install the same requirements again for the new user. Login as the new user and use the same requirements file you used earlier.
+
+```
+pip3 install -r requirements.txt
+```
+
 # Supported routers
 
 ```
