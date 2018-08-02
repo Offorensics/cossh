@@ -54,9 +54,10 @@ tar -xzvf cossh_1.0.0.tar.gz
 
 **3.**
 
-Run _setup.py_ script with sudo.
+Change directory to cossh\_<version> and run _setup.py_ script with sudo.
 
 ```
+cd cossh_1.0.0
 sudo ./setup.py install
 ```
 
@@ -65,7 +66,7 @@ sudo ./setup.py install
 Install requirements.
 
 ```
-pip3 -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 That's it. You are ready to go.

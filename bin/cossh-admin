@@ -13,6 +13,10 @@
 #
 # this will allow full usage of cossh for the given user
 
+if (( $EUID != 0 )); then
+	echo "This script needs to be run as root"
+	exit 1
+fi
 
 if [ -z "$1" ]; then
 	username="$SUDO_USER"
@@ -28,6 +32,7 @@ setfacl -m u:$username:rwx /etc/cossh/configs
 
 #Set user file access permissions for /etc/cossh/keys
 setfacl -m u:$username:rwx /etc/cossh/keys
+setfacl -m u:$username:r /etc/cossh/keys/*
 
 if [ -f /etc/cossh/clients/clients.conf ]; then
 	setfacl -m u:$username:rwx /etc/cossh/clients/clients.conf
