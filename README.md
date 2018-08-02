@@ -151,7 +151,7 @@ Deletes given device from its group
 
 # Cossh functions
 
-**add-client**
+### add-client
 
 Adds a router/client to a given group. Requires **router's management IPv4 address** and **group name**. Management IPv4 address is the address through which cossh will later connect to router to change configuration or fetch data. In many cases this management address is a VPN address, but can be any. The idea is that every router in the same group can be accessed from the same network. Note that each group can only contain unique IPv4 addresses, but two groups may share the same IPv4 addresses. One device can be in one group at a time. This function is not available when logged into a router with SSH key.
 
@@ -181,7 +181,7 @@ add-um = /home/offorensics/mymodule.tgz
 
 ### change-passwd
 
-Changes given user's password. Requires **<username>** and **<password>**. Old password is not needed. Has two available variables ($serial) and ($mac) which can be used anywhere in password. ($serial) will be replaced with router's serial number and ($mac) with router's primary MAC address.
+Changes given user's password. Requires **<username>** and **<password>**. Old password is not needed. Has two available variables **($serial)** and **($mac)** which can be used anywhere in password. **($serial)** will be replaced with router's serial number and **($mac)** with router's primary MAC address.
 
 Example below changes user _offorensics_'s password to _w3akone345!_.
 
@@ -199,7 +199,7 @@ change-passwd = offorensics, w3akone345!
 
 ### create-user
 
-Creates new user in router. The user can be regular user or administrator. Requires three values, **<username>**, **<password>** and **regular/admin**. Has two available variables ($serial) and ($mac) which can be used anywhere in new user's password. ($serial) will be replaced with router's serial number and ($mac) with router's primary MAC address.
+Creates new user in router. The user can be regular user or administrator. Requires three values, **<username>**, **<password>** and **regular/admin**. Has two available variables **($serial)** and **($mac)** which can be used anywhere in new user's password. **($serial)** will be replaced with router's serial number and **($mac)** with router's primary MAC address.
 
 Example below creates a regular user called _slave_, sets user's password to _An0therW3ak10!_.
 
