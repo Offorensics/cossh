@@ -8,20 +8,35 @@ import subprocess
 
 check_root = os.geteuid()
 
+# currently the program must be installed with priviledged permissions, but this is most likely going to change when the program is available
+# to be installed with pip
+if check_root != 0:
+	print("Use 'sudo' to install this program. DO NOT install logged in as root, unless you are going to use the program as root.")
+	sys.exit()
+
+# check if a program is installed
+# if not installed, check if distro is *ubuntu or debian
+# if it is, try to install it
 def check_installation(program):
+
+	# pip3 is needed to install requirements
 	if program == "pip3":
 		apt_package = "python3-pip"
+
+	# cossh uses setfacl command to change acl in /etc/cossh
 	elif program == "setfacl":
 		apt_package = "acl"
+
 	elif program == "setuptools":
 		apt_package = "python3-setuptools"
 
 	release = platform.linux_distribution()
 
+	# check if distro is *ubuntu or debian
 	if shutil.which(program) == None:
 		if any("buntu" in s for s in release) or "Debian" in release:
 			cmd = "apt-get install -y " + apt_package
-			subprocess.call([cmd], shell=True)
+			os.system(cmd)
 		else:
 			print("Program " + program + " doesn't exist, please install it first and then run the setup.py again")
 			sys.exit()
@@ -35,28 +50,23 @@ try:
 except ImportError:
 	check_installation("setuptools")
 
-if check_root != 0:
-    print("Use 'sudo' to install this program")
-    sys.exit()
-
 class UserInstall(install):
-    def run(self):
-        install.run(self)
-        set_perms = 'bin/cossh-admin'
-        install_requirements = 'pip3 install -r requirements.txt'
-        os.system(set_perms)
-        os.system(install_requirements)
+	def run(self):
+		install.run(self)
+		set_perms = 'bin/cossh-admin'
+		os.system(set_perms)
 
 setup(
         name='cossh',
         version='1.0.0',
-        description='Router configuration management tool',
+        description='Router configuration automation/management tool',
         author='Joram Puumala',
         author_email='offorensics@gmail.com',
+	license='MIT'
         packages=['CoSSH', 'CoSSH.GroupStatus', 'CoSSH.Configuration', 'CoSSH.Utils'],
 	include_package_data=True,
         package_dir={'': 'lib'},
-        url='http://offorensics.com',
+        url='https://github.com/Offorensics/cossh',
         install_requires=[
                         'paramiko==2.3.1',
                         'termcolor',

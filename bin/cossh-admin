@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# this script changes access control list on the files/directories listed below
+#
+# /etc/cossh/clients
+# /etc/cossh/clients/clients.conf
+# /etc/cossh/configs
+# /etc/cossh/keys
+#
+# the script will be run during installation and can be run later with the syntax below
+#
+# cossh-admin <user_name>
+#
+# this will allow full usage of cossh for the given user
+
+
 if [ -z "$1" ]; then
 	username="$SUDO_USER"
 else
@@ -14,3 +28,7 @@ setfacl -m u:$username:rwx /etc/cossh/configs
 
 #Set user file access permissions for /etc/cossh/keys
 setfacl -m u:$username:rwx /etc/cossh/keys
+
+if [ -f /etc/cossh/clients/clients.conf ]; then
+	setfacl -m u:$username:rwx /etc/cossh/clients/clients.conf
+fi
