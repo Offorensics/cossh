@@ -195,6 +195,7 @@ class SSHConfiguration():
 
 			try:
 				# ask to set a new password for the group
+				print(colored("NOTE: cossh doesn't store this password anywhere, it's up to you to store it safely somewhere", "yellow"))
 				while passwd_success == False:
 					key_passwd = getpass("Create password for the group: ")
 					verify_passwd = getpass("Verify password: ")

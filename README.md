@@ -153,7 +153,7 @@ Deletes given device from its group
 
 ### add-client
 
-Adds a router/client to a given group. Requires **router's management IPv4 address** and **group name**. Management IPv4 address is the address through which cossh will later connect to router to change configuration or fetch data. In many cases this management address is a VPN address, but can be any. The idea is that every router in the same group can be accessed from the same network. Note that each group can only contain unique IPv4 addresses, but two groups may share the same IPv4 addresses. One device can be in one group at a time. This function is not available when logged into a router with SSH key.
+Adds a router/client to a given group. Requires **router's management IPv4 address** and **group name**. Management IPv4 address is the address through which cossh will later connect to router to change configuration or fetch data. In many cases this management address is a VPN address, but can be any. The idea is that every router in the same group can be accessed from the same network. Note that each group can only contain unique IPv4 addresses, but two groups may share the same IPv4 addresses. One device can be in one group at a time. This function is not available when logged into a router with SSH key. **NOTE:** cossh does **NOT** save any passwords anywhere, I recommend using an external program to store very cryptic passwords.
 
 Example below adds router with IPv4 address _10.100.194.1_ to group cossh.
 
