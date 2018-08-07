@@ -42,7 +42,7 @@ Currently Cossh can only be installed from the source, but future versions will 
 
 **1.**
  
-Install the latest Cossh tarball <here>
+Download the latest Cossh tarball <here>
 
 **2.**
 

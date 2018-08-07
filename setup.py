@@ -67,11 +67,11 @@ setup(
 	include_package_data=True,
         package_dir={'': 'lib'},
         url='https://github.com/Offorensics/cossh',
-        install_requires=[
-                        'paramiko==2.3.1',
-                        'termcolor',
-                        'openpyxl',
-                        ],
+#        install_requires=[
+#                        'paramiko==',
+#                        'termcolor',
+#                        'openpyxl',
+#                        ],
         python_requires='>=3.4.*',
         data_files=[('/etc/cossh/clients', ['files/clients.txt']),
                     ('/etc/cossh/keys', ['files/keys.txt']),

@@ -22,6 +22,7 @@
 
 
 from getpass import getpass
+from termcolor import colored
 import re
 import sys
 import subprocess
@@ -190,7 +191,7 @@ class SSHConfiguration():
 		# check if groups SSH keys exist
 		if not os.path.exists(private_key_file) and not os.path.exists(public_key_file):
 			passwd_success = False
-			print("Created new group '" + client_group + "'")
+			print(colored("Created new group '" + client_group + "'", "green"))
 
 			try:
 				# ask to set a new password for the group
@@ -201,12 +202,12 @@ class SSHConfiguration():
 						if re.match(r'[A-Za-z0-9@#$%^&+=!?-]{8,}', key_passwd):
 							passwd_success = True
 						else:
-							print("Minimum length for password is 8 characters, allowed characters are A-Za-z0-9@#$%^&+=!?-")
+							print(colored("Minimum length for password is 8 characters, allowed characters are A-Za-z0-9@#$%^&+=!?-", "red"))
 			except KeyboardInterrupt:
-				print("Aborted")
+				print(colored("Aborted", "red"))
 
 			except Exception as e:
-				print(e)
+				print(colored(e, "red"))
 
 			# create new encrypted SSH keys for the group
 			create_keys = 'ssh-keygen -b 2048 -t rsa -f /etc/cossh/keys/cossh-key_' + client_group + ' -q -N "' + key_passwd + '"'

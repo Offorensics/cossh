@@ -145,7 +145,7 @@ if __name__ == '__main__':
 		try:
 			key_file = open("/etc/cossh/keys/cossh-key_" + group, "r")
 		except FileNotFoundError:
-			print("Keys for group '" + group + "' don't exist")
+			print(colored("Keys for group '" + group + "' don't exist", "red"))
 			sys.exit()
 
 		try:
@@ -219,8 +219,8 @@ if __name__ == '__main__':
 		if os.path.exists("cossh.cfg"):
 			cfgfile = "cossh.cfg"
 		else:
-			print("No configuration file specified, by default trying to use cossh.cfg in current working directory, but it doesn't exist")
-			print("Please, provide configuration file with '-f' parameter or create cossh.cfg in the working directory")
+			print(colored("No configuration file specified, by default trying to use cossh.cfg in current working directory, but it doesn't exist", "red"))
+			print(colored("Please, provide configuration file with '-f' parameter or create cossh.cfg in the working directory", "red"))
 			sys.exit()
 
 	def launch_process(login_line):
@@ -333,7 +333,7 @@ if __name__ == '__main__':
 								print(colored("Invalid syntax in '" + col1 + "' specification on line " + str(line_count), "red"))
 								pass
 						except Exception as e:
-							print(e)
+							print(colored(e, "red"))
 							pass
 
 					# update-name function just defines update_value variable, which can be used to
@@ -381,7 +381,7 @@ if __name__ == '__main__':
 
 					check_login_group = InPlaceReplacement.search_string(client_file, "@@" + login_group + "@@")
 					if check_login_group == False:
-						print("Group '" + login_group + "' doesn't exist, exiting...")
+						print(colored("Group '" + login_group + "' doesn't exist, exiting...", "red"))
 						sys.exit()
 
 					# group's password will be asked
@@ -390,11 +390,11 @@ if __name__ == '__main__':
 						passwd = getpass("Enter password: ")
 
 					except KeyboardInterrupt:
-						print("\nAborted..")
+						print(colored("\nAborted..", "red"))
 						sys.exit()
 
 					except Exception as e:
-						print(e)
+						print(colored(e, "red"))
 						sys.exit()
 
 					# build the login line
@@ -404,7 +404,7 @@ if __name__ == '__main__':
 					verify_passwd = check_key_passwd(login_group, passwd)
 
 					if verify_passwd == False:
-						print("Invalid password for group '" + login_group + "'")
+						print(colored("Invalid password for group '" + login_group + "'", "red"))
 						sys.exit()
 					break
 
@@ -420,7 +420,7 @@ if __name__ == '__main__':
 
 					check_login_group = InPlaceReplacement.search_string(client_file, "@@" + login_group + "@@")
 					if check_login_group == False:
-						print("Group '" + login_group + "' doesn't exist, exiting...")
+						print(colored("Group '" + login_group + "' doesn't exist, exiting...", "red"))
 						sys.exit()
 
 					# group's password will be asked
@@ -429,7 +429,7 @@ if __name__ == '__main__':
 						passwd = getpass("Enter password: ")
 
 					except KeyboardInterrupt:
-						print("\nAborted...")
+						print(colored("\nAborted...", "red"))
 						sys.exit()
 
 					except Exception as e:
@@ -440,7 +440,7 @@ if __name__ == '__main__':
 					verify_passwd = check_key_passwd(login_group, passwd)
 
 					if verify_passwd == False:
-						print("Invalid password for group '" + login_group + "'")
+						print(colored("Invalid password for group '" + login_group + "'", "red"))
 						sys.exit()
 
 					# if password is valid, read clients.conf which contains all client groups
@@ -470,20 +470,20 @@ if __name__ == '__main__':
 
 		# if creds are False after all of these checks, print error message and exit
 		if creds == False:
-			print("IPv4 address and router's password are missing")
+			print(colored("IPv4 address and router's password are missing", "red"))
 			sys.exit()
 
 	# if cfg file cannot be found, print this error message
 	except FileNotFoundError:
-		print("File '" + cfgfile + "' does not exist, exiting...")
+		print(colored("File '" + cfgfile + "' does not exist, exiting...", "red"))
 		sys.exit()
 
 	except PermissionError:
-		print("Can't read configuration file, permissions for '" + cfgfile + "' are invalid, exiting...")
+		print(colored("Can't read configuration file, permissions for '" + cfgfile + "' are invalid, exiting...", "red"))
 		sys.exit()
 
 	except Exception as e:
-		print(e)
+		print(colored(e, "red"))
 		sys.exit()
 
 	# login and login-key methods will launch a single configuration process
@@ -500,7 +500,7 @@ if __name__ == '__main__':
 		except TimeoutError:
 			sys.exit()
 		except ValueError:
-			print("Group is empty, exiting...")
+			print(colored("Group is empty, exiting...", "red"))
 			sys.exit()
 		except Exception as e:
 			print(e)

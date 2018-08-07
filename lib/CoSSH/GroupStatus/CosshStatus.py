@@ -107,7 +107,7 @@ class CosshStatus():
 			print(colored("Invalid file permissions for '" + self.client_file + "'", "red"))
 
 		except Exception as e:
-			print(e)
+			print(colored(e, "red"))
 
 
 	def generate_cfg(self):
@@ -135,7 +135,7 @@ class CosshStatus():
 				ef.write("# upload-file = <path_to_local_file>, <path_to_remote_location>\n\nupload-file = /home/cossh/files/example_file.txt, /root\n\n")
 				ef.write("# write-excel = <custom_value>, <path_to_excel_file>, <sheet_name>, <column>\nwrite-excel = $serial, /home/cossh/data/routers.xlsx, routers, B\n")
 
-			print("Created " + example_file)
+			print(colored("Created " + example_file, "green"))
 
 		except PermissionError:
 			print(colored("Permission denied, can't create an example file in this directory", "red"))

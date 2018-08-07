@@ -21,6 +21,7 @@
 #SOFTWARE.
 
 
+from termcolor import colored
 import os
 import tempfile
 
@@ -40,13 +41,13 @@ class InPlaceReplacement():
 			os.replace(outfile.name, filename)
 
 		except FileNotFoundError:
-			print(filename + ", no such file or directory")
+			print(colored(filename + ", no such file or directory", "red"))
 
 		except PermissionError:
-			print("Invalid file permissions for '" + filename + "'")
+			print(colored("Invalid file permissions for '" + filename + "'", "red"))
 
 		except Exception as e:
-			print(e)
+			print(colored(e, "red"))
 
 	# writes a given string after matching strings
 	def after_string(match, string, filename):
@@ -62,13 +63,13 @@ class InPlaceReplacement():
 			os.replace(outfile.name, filename)
 
 		except FileNotFoundError:
-			print(filename + ", no such file or directory")
+			print(colored(filename + ", no such file or directory", "red"))
 
 		except PermissionError:
-			 print("Invalid file permissions for '" + filename + "'")
+			 print(colored("Invalid file permissions for '" + filename + "'", "red"))
 
 		except Exception as e:
-			print(e)
+			print(colored(e, "red"))
 
 	# removes lines where matching strings are found
 	def remove_string_line(string_line, filename):
@@ -83,13 +84,13 @@ class InPlaceReplacement():
 			os.replace(outfile.name, filename)
 
 		except FileNotFoundError:
-			print(filename + ", no such file or directory")
+			print(colored(filename + ", no such file or directory", "red"))
 
 		except PermissionError:
-			 print("Invalid file permissions for '" + filename + "'")
+			 print(colored("Invalid file permissions for '" + filename + "'", "red"))
 
 		except Exception as e:
-			print(e)
+			print(colored(e, "red"))
 
 	def remove_string_lines(string_lines, filename):
 
@@ -103,13 +104,13 @@ class InPlaceReplacement():
 			os.replace(outfile.name, filename)
 
 		except FileNotFoundError:
-			print(filename + ", no such file or directory")
+			print(colored(filename + ", no such file or directory", "red"))
 
 		except PermissionError:
-			 print("Invalid file permissions for '" + filename + "'")
+			 print(colored("Invalid file permissions for '" + filename + "'", "red"))
 
 		except Exception as e:
-			print(e)
+			print(colored(e, "red"))
 
 	def search_string(cfg_file, string):
 		try:
@@ -119,8 +120,8 @@ class InPlaceReplacement():
 				else:
 					return False
 		except PermissionError:
-			print("Invalid file permissions for '" + filename + "'")
+			print(colored("Invalid file permissions for '" + filename + "'", "red"))
 
 		except Exception as e:
-			print(e)
+			print(colored(e, "red"))
 

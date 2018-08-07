@@ -22,6 +22,7 @@
 
 
 from CoSSH.Utils.FileWriting import InPlaceReplacement
+from termcolor import colored
 import os
 import sys
 
@@ -34,7 +35,7 @@ class DeleteObject():
 		group = self.catch_group(groupname)
 
 		if not group:
-			print("Group '" + groupname + "' doesn't exist")
+			print(colored("Group '" + groupname + "' doesn't exist", "red"))
 			sys.exit()
 
 		public_key = "/etc/cossh/keys/cossh-key_" + groupname + ".pub"
@@ -42,7 +43,7 @@ class DeleteObject():
 
 		InPlaceReplacement.remove_string_lines(group, self.client_conf)
 
-		print("Group '" + groupname + "' deleted")
+		print(colored("Group '" + groupname + "' deleted", "green"))
 
 		try:
 			if os.path.exists(public_key):
@@ -51,10 +52,10 @@ class DeleteObject():
 			if os.path.exists(private_key):
 				os.remove(private_key)
 
-			print("Group keys removed")
+			print(colored("Group keys removed", "green"))
 
 		except PermissionError:
-			print("You are not permitted to deal with the keys")
+			print(colored("You are not permitted to deal with the keys", "red"))
 			sys.exit()
 
 
@@ -63,9 +64,9 @@ class DeleteObject():
 
 		if check_string == True:
 			InPlaceReplacement.remove_string_line(serial, self.client_conf)
-			print("Device '" + str(serial) + "' removed from its host group")
+			print(colored("Device '" + str(serial) + "' removed from its host group", "green"))
 		else:
-			print("Device '" + str(serial) + "' doesn't belong to any group")
+			print(colored("Device '" + str(serial) + "' doesn't belong to any group", "yellow"))
 
 	def catch_group(self, groupname):
 
@@ -88,12 +89,12 @@ class DeleteObject():
 				return group_members
 
 		except FileNotFoundError:
-			print("/etc/cossh/clients/clients.conf doesn't exist")
+			print(colored("/etc/cossh/clients/clients.conf doesn't exist", "red"))
 			sys.exit()
 
 		except PermissionError:
-			print("You are not permitted to deal with the groups")
+			print(colored("You are not permitted to deal with the groups", "red"))
 			sys.exit()
 
 		except Exception as e:
-			print(e)
+			print(colored(e, "red"))
