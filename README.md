@@ -4,7 +4,7 @@ _Cossh_ is a simple configuration/configuration management tool written in Pytho
 
 # What about SmartWorxHub?
 
-_SmartWorxHub_ is Advantech-BB's configuration management tool for the company's industrial routers, and Cossh is not aiming to replace it. Cossh is a free open-source tool that can manage routers just like SmartWorxHub. It was created to complement SmartWorxHub's shortcomings. Note that SmartWorxHub provides some useful features that Cossh doesn't (yet, check what is next part!). When choosing which configuration management tool to use and in which case, you should at least ask yourself the following questions: How big is my network of routers? Do I need an agent that connects from routers to SmartWorxHub? Do the routers have a management IP (e.g. VPN)? How widely are the routers distributed? 
+_SmartWorxHub_ is Advantech-BB's configuration management tool for the company's industrial routers, and Cossh is not aiming to replace it. Cossh is a free open-source tool that can manage routers just like SmartWorxHub. It was created to complement SmartWorxHub's shortcomings. Note that SmartWorxHub provides some useful features that Cossh doesn't (yet, check what is next part!). When choosing which configuration management tool to use and in which case, you should at least ask yourself the following questions: How big is my network of routers? Do I need an agent that connects from routers to SmartWorxHub? Do the routers have a management IP (e.g. VPN)? 
 
 # Cossh syntax and general rules
 
