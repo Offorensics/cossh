@@ -444,3 +444,11 @@ As router's API evolves, it will be possible to choose between configuration ove
 **Router State**
 
 There will be more statistics available, such as router's temperature and signal strength, and much more.
+
+# Bugs and issues
+
+See known bugs and issues [bugs and issues](https://github.com/Offorensics/cossh/issues "here").
+
+# License
+
+Cossh is released under the [MIT License](https://opensource.org/licenses/MIT "MIT License")

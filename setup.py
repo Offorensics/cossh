@@ -64,6 +64,7 @@ setup(
         author_email='offorensics@gmail.com',
 	license='MIT',
         packages=['CoSSH', 'CoSSH.GroupStatus', 'CoSSH.Configuration', 'CoSSH.Utils'],
+	platforms=['Linux'],
 	include_package_data=True,
         package_dir={'': 'lib'},
         url='https://github.com/Offorensics/cossh',

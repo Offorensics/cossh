@@ -326,7 +326,7 @@ if __name__ == '__main__':
 							if col1 == "reboot":
 								conf.reboot()
 								if silent == False:
-									print(colored(ip_address + ": Reboot issued, end of configuration", "green"))
+									print(ip_address + ":" + colored(" Reboot issued, end of configuration", "green"))
 
 							# other too short lines are considered invalid
 							else:
