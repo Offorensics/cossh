@@ -179,6 +179,10 @@ EXAMPLE
 add-um = /home/offorensics/mymodule.tgz
 ```
 
+> ![add usermodule](img/cossh_add_um_group.png)
+
+> Fig. 1 - Adding user module mymodule.tgz to routers that belong to group Offorensics
+
 ### change-passwd
 
 Changes given user's password. Requires **<username>** and **<password>**. Old password is not needed. Has two available variables **($serial)** and **($mac)** which can be used anywhere in password. **($serial)** will be replaced with router's serial number and **($mac)** with router's primary MAC address.
@@ -196,6 +200,10 @@ change-passwd = <username>, <password>
 EXAMPLE
 change-passwd = offorensics, w3akone345!
 ```
+
+> ![change password](img/cossh_change_pw.png)
+
+> Fig. 2 - Changing password for user Offorensics on routers that belong to group Offorensics
 
 ### create-user
 
@@ -215,6 +223,10 @@ EXAMPLE
 create-user = slave, An0therW3ak10!, regular
 ```
 
+> ![create user](img/cossh_create_user.png)
+
+> Fig. 3 - Creating user slave on routers that belong group Offorensics
+
 ### delete-user
 
 Deletes given user from router. Requires only **<username>**.
@@ -229,6 +241,10 @@ EXAMPLE
 delete-user = slave
 ```
 
+> ![delete user](img/cossh_delete_user.png)
+
+> Fig. 4 - Deleting user slave from routers that belong to group Offorensics
+
 ### latest-update
 
 Fetches the latest update/configuration information from router and prints it out to standard output. See **update-name** function for more information about the latest update feature.
@@ -242,6 +258,10 @@ latest-update = show
 EXAMPLE
 latest-update = show
 ```
+
+> ![latest update](img/cossh_latest_update.png)
+
+> Fig. 5 - Showing the most recent update on routers that belong to group Offorensics
 
 ### login
 
@@ -297,6 +317,10 @@ EXAMPLE
 router-command = /etc/init.d/eth restart
 ```
 
+> ![router command](img/cossh_router_cmd.png)
+
+> Fig. 6 - Running /etc/init.d/eth restart command on routers that belong to group Offorensics
+
 ### reboot
 
 Reboots router. Not recommended to be used in the middle of configuration, because the command will end it.
@@ -310,6 +334,10 @@ reboot
 EXAMPLE
 reboot
 ```
+
+> ![reboot](img/cossh_reboot.png)
+
+> Fig. 7 - Issuing reboot command to routers that belong to group Offorensics
 
 ### remove-um
 
@@ -325,6 +353,10 @@ EXAMPLE
 remove-um = mymodule
 ```
 
+> ![remove user module](img/cossh_remove_um.png)
+
+> Fig. 8 - Removing user module mymodule from routers that belong to group Offorensics
+
 ### save-unique
 
 Imports router's current configuration and saves it under **/etc/cossh/configs/** as the router's unique configuration file.
@@ -336,6 +368,10 @@ save-unique = true
 EXAMPLE
 save-unique = true
 ```
+
+> ![save unique](img/cossh_save_unique.png)
+
+> Fig. 9 - Saving unique configuration files to /etc/cossh/configs from routers that belong to group Offorensics
 
 ### sws
 
@@ -355,6 +391,10 @@ EXAMPLES
 sws = SNMP_NAME=$serial
 sws = ETH_IPADDR=192.168.50.1
 ```
+
+> ![sws](img/cossh_sws.png)
+
+> Fig. 10 - Changing single parameter, SNMP_NAME on routers that belong to group Offorensics
 
 ### update-name
 
@@ -386,6 +426,10 @@ upload-cfg = <path_to_configuration_file>, standard/alt1/alt2/alt3
 EXAMPLE
 upload-cfg = /home/offorensics/mytestconf.cfg, standard
 ```
+
+> ![upload cfg](img/cossh_upload_cfg.png)
+
+> Fig. 11 - Uploading unique configuration files to routers that belong to group Offorensics
  
 ### upload-file
 
@@ -400,6 +444,10 @@ upload-file = <path_to_local_file>, <remote_location>
 EXAMPLE
 upload-file = /home/offorensics/counter.sh, /root
 ```
+
+> ![upload file](img/cossh_upload_file.png)
+
+> Fig. 1 - Uploading file counter.sh to routers that belong to group Offorensics
 
 ### write-excel
 
