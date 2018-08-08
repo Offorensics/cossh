@@ -447,7 +447,7 @@ upload-file = /home/offorensics/counter.sh, /root
 
 > ![upload file](img/cossh_upload_file.png)
 
-> Fig. 1 - Uploading file counter.sh to routers that belong to group Offorensics
+> Fig. 12 - Uploading file counter.sh to routers that belong to group Offorensics
 
 ### write-excel
 
@@ -468,6 +468,51 @@ EXAMPLES
 write-excel = $mac, /home/offorensics/delivered_routers.xlsx, Routers, A
 write-excel = This device is OK, /home/offorensics/delivered_routers.xlsx, Routers, D
 ```
+# An example cossh configuration file
+
+Creating a cossh configuration file is simple and fast. Here we will create an example cossh configuration file to see how it works. In the example, we want to pre-configure a router before shipping it to our customer. We want to add it to group **CustomerCompany**, change root user's password, create a new regular user called **generic**, add new user module named **CustomerModule.tgz**, upload a new configuration file and finally write some information into an **.xlsx** file.
+
+First we will create a new empty plain text file. We will name it **cossh.cfg**, but it can be anything. Then we will write the configuration in the file, just like the example below shows.
+
+```
+# first we choose normal login function to log (username/password authentication)
+# into the router which requires router's IPv4 address and root password
+
+login = 192.168.1.1, root
+
+# next we add the router to CustomerCompany group
+# we use router's VPN address, so the group will be managed over VPN connection later
+
+add-client = 10.60.15.1, CustomerCompany
+
+# then we change root user's password to Too3asytoGUESS!
+
+change-passwd = root, Too3asytoGUESS!
+
+# after changing root user's password, we create new user called generic
+# generic's password will be 3venEasier! and it will be a regular user
+
+create-user = generic, 3venEasier!, regular
+
+# now we add the user module to the router
+
+add-um = CustomerModule.tgz
+
+# next we upload new configuration file called CustomerCompany_10.60.15.1.cfg to the router
+# which contains configuration parameters such as VPN parameters
+# the configuration we want to be used in standard profile
+
+upload-cfg = CustomerCompany_10.60.15.1.cfg, standard
+
+# finally we will get some information from the router and write it into .xlsx file called
+# delivered_routers.xlsx
+
+write-excel = $serial, delivered_routers.xlsx, Routers, A
+write-excel = $mac, delivered_routers.xlsx, Routers, B
+write-excel = $date, delivered_routers.xlsx, Routers, C
+```
+
+Now that we have our cossh configuration file, we can just run `cossh` command. It will look for a file called **cossh.cfg** in our current working directory and read it if it exists, and configure the router accordingly. If you named your cossh configuration file differently, simply run `cossh -f <path/to/your/cfg_file>`.
 
 # What is next?
 
