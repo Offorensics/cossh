@@ -392,7 +392,7 @@ class SSHConfiguration():
 			val = self.get_mac()
 		elif val == "$serial":
 			val = self.get_serial()
-		elif val == "$model"
+		elif val == "$model":
 			val = self.get_model()
 
 		#change_val = "sed -i 's/" + param + ".*/" + param + val + "/' " + remote_file
