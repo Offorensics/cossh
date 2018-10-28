@@ -309,6 +309,8 @@ class SSHConfiguration():
 			excel_value = self.get_mac()
 		elif excel_value == "$date":
 			excel_value = datetime.datetime.now().strftime ("%d/%m/%Y")
+		elif excel_value == "$model":
+			excel_value = self.get_model()
 
 		wb = openpyxl.load_workbook(filename = file_path)
 
@@ -337,6 +339,22 @@ class SSHConfiguration():
 		wb.save(filename = file_path)
 
 		return status_msg, func_stat
+
+	# gets router's model
+	def get_model(self):
+		cmd = "status -v sys |grep \"Product Name\" |awk '{print $4}'"
+		ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(cmd)
+		outp = ssh_stdout.readlines()
+		model = outp[0].strip()
+
+		if model == "SPECTRE-v3-LTE":
+			model = "SmartFlex"
+		elif model == "SPECTRE-v3T-LTE":
+			model = "SmartMotion"
+		elif model == "SPECTRE-v3L-LTE":
+			model = "SmartStart"
+
+		return model
 
 	# gets router's serial number
 	def get_serial(self):
@@ -374,6 +392,8 @@ class SSHConfiguration():
 			val = self.get_mac()
 		elif val == "$serial":
 			val = self.get_serial()
+		elif val == "$model"
+			val = self.get_model()
 
 		#change_val = "sed -i 's/" + param + ".*/" + param + val + "/' " + remote_file
 		change_val = "sed -i 's|" + param + ".*|" + param + val + "|' " + remote_file

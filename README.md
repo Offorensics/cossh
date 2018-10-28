@@ -375,7 +375,7 @@ save-unique = true
 
 ### sws
 
-Configures a single parameter in router (currently only standard profile). Requires **setting/value pair**. Notice that it is extremely important to have no whitespaces around the equal (=) sign between **setting** and **value** in **setting/value pair** (don't confuse this with cossh syntax)! Two variables are available, **$serial** and **$mac** which can be used to replace value in **setting/value pair**. **$serial** will be replaced with router's serial number and **$mac** with router's primary MAC address.
+Configures a single parameter in router (currently only standard profile). Requires **setting/value pair**. Notice that it is extremely important to have no whitespaces around the equal (=) sign between **setting** and **value** in **setting/value pair** (don't confuse this with cossh syntax)! Three variables are available, **$serial**, **$model** and **$mac** which can be used to replace value in **setting/value pair**. **$serial** will be replaced with router's serial number, **$model** with router's model and **$mac** with router's primary MAC address.
 
 Examples below set parameter SNMP\_NAME to router's serial number and ETH\_IPADDR to _192.168.50.1_.
 
@@ -383,6 +383,7 @@ Examples below set parameter SNMP\_NAME to router's serial number and ETH\_IPADD
 VARIABLES
 $mac
 $serial
+$model
 
 SYNTAX
 sws = <settings>=<value>
@@ -451,7 +452,7 @@ upload-file = /home/offorensics/counter.sh, /root
 
 ### write-excel
 
-Writes a custom value to given **.xlsx** file. Requires **a value**, **a path to .xlsx file**, **sheetname** and **column**. Currently three variables are available, **$serial**, **$mac** and **$date**, which can be used as custom values. **$serial** will be replaced with router's serial number and **$mac** with router's primary MAC address. **$date** will be replaced with current date. **NOTE:** the value will be written to the first empty cell under a given column.
+Writes a custom value to given **.xlsx** file. Requires **a value**, **a path to .xlsx file**, **sheetname** and **column**. Currently four variables are available, **$serial**, **model**, **$mac** and **$date**, which can be used as custom values. **$serial** will be replaced with router's serial number and **$mac** with router's primary MAC address. **$date** will be replaced with current date. **NOTE:** the value will be written to the first empty cell under a given column.
 
 Example below writes router's MAC address to column **A** and string **This device is OK** to column **D**, on sheet **Routers** in **delivered_routers.xlsx**.
 
@@ -460,6 +461,7 @@ VARIABLES
 $date
 $mac
 $serial
+$model
 
 SYNTAX
 write-excel = <custom value>, <path_to_xlsx_file>, <sheetname>, <column>
@@ -540,7 +542,7 @@ There will be more statistics available, such as router's temperature and signal
 
 # Bugs and issues
 
-See known bugs and issues [bugs and issues](https://github.com/Offorensics/cossh/issues "here").
+See known [bugs and issues](https://github.com/Offorensics/cossh/issues "here").
 
 # License
 
