@@ -797,8 +797,6 @@ class SSHConfiguration():
                 if filename != check_remote_path:
                         if path_in_dest.endswith("/"):
                                 path_in_dest = path_in_dest + filename
-                        else:
-                                path_in_dest = path_in_dest + "/" + filename
 
                 local_md5 = LocalHash.calculate_md5(path_in_orig)
                 remote_md5_cmd = "openssl md5 " + path_in_dest + " |awk '{print $2}'"
