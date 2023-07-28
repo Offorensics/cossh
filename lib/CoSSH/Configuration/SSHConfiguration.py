@@ -30,6 +30,7 @@ import paramiko
 import os
 import openpyxl
 import datetime
+import time
 from CoSSH.Utils.FileWriting import InPlaceReplacement
 from CoSSH.Utils.Hashing import LocalHash
 from CoSSH.Utils.TarBalls import TarBalls
@@ -375,15 +376,22 @@ class SSHConfiguration():
                 cmd = "status -v module |grep \"IMEI\" |awk '{print $3}'"
                 ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(cmd)
                 outp = ssh_stdout.readlines()
-                serial = outp[0].strip()
-                return serial
+                imei = outp[0].strip()
+                return imei
 
-        def get_iccid(self):
+        def get_iccid(self, attempts=1, delay=5):
                 cmd = "status -v module |grep \"ICCID\" |awk '{print $3}'"
-                ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(cmd)
-                outp = ssh_stdout.readlines()
-                serial = outp[0].strip()
-                return serial
+                for i in range(attempts):
+                        ssh_stdin, ssh_stdout, ssh_stderr = self.conn.exec_command(cmd)
+                        outp = ssh_stdout.readlines()
+                        iccid = outp[0].strip()
+
+                        if iccid != "N/A":
+                                break
+                        else:
+                                time.sleep(delay)
+
+                return iccid
 
         # gets router's serial number
         def get_serial(self):
